@@ -4,6 +4,7 @@ import pygame.draw
 from pygame import Surface, Rect
 
 from color_palette import ColorPalette
+from xy import XY
 
 
 class Starship:
@@ -12,7 +13,7 @@ class Starship:
                  max_speed: float = 10, boost_speed: float = 0.5, angle_speed: float = 5, brake_speed: float = 1):
 
         self._window: Surface = window
-        self._position: Rect = Rect((window.get_rect().width/2, window.get_rect().height/2, 1, 1))
+        self._position: XY = XY(window.get_rect().width / 2, window.get_rect().height / 2)
         self._size: int = 31
 
         self._max_speed: float = max_speed
@@ -20,27 +21,26 @@ class Starship:
         self._angle_speed: float = angle_speed
         self._brake_speed: float = brake_speed
 
-        self._speed_x: int = 0
-        self._speed_y: int = 0
+        self._speed: XY = XY(0, 0)
         self._angle: int = 0
 
     def boost(self):
         # Based on trigonometric circle
-        motion_x = -round(math.sin(math.radians(self._angle)), 2) * self._boost_speed
-        motion_y = -round(math.cos(math.radians(self._angle)), 2) * self._boost_speed
+        motion: XY = XY(-round(math.sin(math.radians(self._angle)), 2) * self._boost_speed,
+                        -round(math.cos(math.radians(self._angle)), 2) * self._boost_speed)
 
-        if abs(self._speed_x + motion_x) > self._max_speed or abs(self._speed_y + motion_y) > self._max_speed:
+        if abs(self._speed.x + motion.x) > self._max_speed or abs(self._speed.y + motion.y) > self._max_speed:
             return
 
-        self._speed_x = self._speed_x + motion_x
-        self._speed_y = self._speed_y + motion_y
+        self._speed.x = self._speed.x + motion.x
+        self._speed.y = self._speed.y + motion.y
 
     def brake(self):
-        if abs(self._speed_x) > self._brake_speed or abs(self._speed_y) > self._brake_speed:
+        if abs(self._speed.x) > self._brake_speed or abs(self._speed.y) > self._brake_speed:
             return
 
-        self._speed_x = 0
-        self._speed_y = 0
+        self._speed.x = 0
+        self._speed.y = 0
 
     def turn_left(self):
         self._angle = self._angle + self._angle_speed
@@ -66,8 +66,8 @@ class Starship:
         pygame.draw.lines(surface, ColorPalette.starship, True, points)
 
         # Compute the position
-        self._position.x = self._position.x + self._speed_x
-        self._position.y = self._position.y + self._speed_y
+        self._position.x = self._position.x + self._speed.x
+        self._position.y = self._position.y + self._speed.y
 
         if self._position.x < 0:
             self._position.x = self._window.get_width() + self._position.x
@@ -88,7 +88,7 @@ class Starship:
 
     def debug(self) -> str:
         debug_msg: str = (f"Starship: pos({self._position.x},{self._position.y}) "
-                          f"angle({self._angle}°) speed({self._speed_x},{self._speed_y})")
+                          f"angle({self._angle}°) speed({self._speed.x},{self._speed.y})")
         return debug_msg
 
     def get_pos(self) -> tuple[float, float]:

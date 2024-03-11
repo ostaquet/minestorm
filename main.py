@@ -1,6 +1,7 @@
 import pygame
 
 from color_palette import ColorPalette
+from enemy import Enemy
 from fire import Fire
 from starship import Starship
 
@@ -18,6 +19,7 @@ def main():
 
     player1: Starship = Starship(window)
     shoots: list[Fire] = []
+    enemies: list[Enemy] = []
 
     while not game_over:
         # Event management

@@ -8,3 +8,4 @@ class ColorPalette:
     background = _black
     starship = _white
     fire = _white
+    enemy = _white
